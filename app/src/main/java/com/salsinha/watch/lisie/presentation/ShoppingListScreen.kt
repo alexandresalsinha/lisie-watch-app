@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,43 +74,82 @@ fun ShoppingListScreen(viewModel: ShoppingViewModel) {
 
 @Composable
 fun ShoppingItemRow(item: ShoppingItem) {
+    var expanded by remember { mutableStateOf(false) }
+
     Card(
-        onClick = { /* TODO */ },
+        onClick = { expanded = !expanded },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (!item.imageUrl.isNullOrEmpty()) {
-                AsyncImage(
-                    model = item.imageUrl,
-                    contentDescription = item.name,
-                    modifier = Modifier.size(40.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.body1,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (item.brand != null) {
-                    Text(
-                        text = item.brand,
-                        style = MaterialTheme.typography.caption2,
-                        color = Color.Gray
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (!item.imageUrl.isNullOrEmpty()) {
+                    AsyncImage(
+                        model = item.imageUrl,
+                        contentDescription = item.name,
+                        modifier = Modifier.size(40.dp)
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = item.name,
+                        style = MaterialTheme.typography.body1,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (item.brand != null) {
+                        Text(
+                            text = item.brand,
+                            style = MaterialTheme.typography.caption2,
+                            color = Color.Gray
+                        )
+                    }
+                }
+
+                Text(
+                    text = "x${item.quantity}",
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+
+            if (expanded && !item.priceList.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                item.priceList.sortedBy { it.price }.forEach { priceItem ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = getStoreName(priceItem.storeId),
+                            style = MaterialTheme.typography.caption2,
+                            color = Color.LightGray
+                        )
+                        Text(
+                            text = "€${String.format("%.2f", priceItem.price)}",
+                            style = MaterialTheme.typography.caption2,
+                            color = MaterialTheme.colors.secondary
+                        )
+                    }
                 }
             }
-            
-            Text(
-                text = "x${item.quantity}",
-                style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(start = 4.dp)
-            )
         }
+    }
+}
+
+fun getStoreName(storeId: Int): String {
+    return when (storeId) {
+        1 -> "Auchan"
+        2 -> "Continente"
+        3 -> "Pingo Doce"
+        4 -> "Intermarché"
+        5 -> "Minipreço"
+        7 -> "El Corte Inglés"
+        else -> "Store #$storeId"
     }
 }

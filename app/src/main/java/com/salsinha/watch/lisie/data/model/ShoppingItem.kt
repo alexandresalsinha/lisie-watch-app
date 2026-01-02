@@ -2,6 +2,13 @@ package com.salsinha.watch.lisie.data.model
 
 import com.google.gson.annotations.SerializedName
 
+data class PriceItem(
+    @SerializedName("Id") val id: Int,
+    @SerializedName("StoreId") val storeId: Int,
+    @SerializedName("Price") val price: Double,
+    @SerializedName("UpdateDate") val updateDate: String
+)
+
 data class ShoppingItem(
     @SerializedName("Id") val id: Int,
     @SerializedName("ProductId") val productId: Int,
@@ -15,5 +22,6 @@ data class ShoppingItem(
     @SerializedName("Category") val category: String?,
     @SerializedName("ItemType") val itemType: String,
     @SerializedName("ImageUrl") val imageUrl: String?,
-    @SerializedName("Unit") val unit: String?
+    @SerializedName("Unit") val unit: String?,
+    @SerializedName("PriceList") val priceList: List<PriceItem>?
 )
